@@ -57,12 +57,11 @@ ENV NVIDIA_DRIVER_CAPABILITIES ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPA
 
 # Eigen
 ARG EIGEN3_VERSION=3.3.7
-WORKDIR /tmp
+WORKDIR /tmp/build_all_
 RUN set -x && \
-  wget -q http://bitbucket.org/eigen/eigen/get/${EIGEN3_VERSION}.tar.bz2 && \
-  tar xf ${EIGEN3_VERSION}.tar.bz2 && \
-  rm -rf ${EIGEN3_VERSION}.tar.bz2 && \
-  mv eigen-eigen-* eigen-${EIGEN3_VERSION} && \
+  wget -q https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.gz && \
+  tar zxvf eigen-${EIGEN3_VERSION}.tar.bz && \
+  rm -rf eigen-${EIGEN3_VERSION}.tar.bz && \
   cd eigen-${EIGEN3_VERSION} && \
   mkdir -p build && \
   cd build && \
