@@ -55,10 +55,12 @@ ENV LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${LD_LIBRARY_PATH}
 ENV NVIDIA_VISIBLE_DEVICES ${NVIDIA_VISIBLE_DEVICES:-all}
 ENV NVIDIA_DRIVER_CAPABILITIES ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
 
+ENV TMP_BUILD_ALL_DIR=/tmp/build_all_
+RUN rm -rf ${TMP_BUILD_ALL_DIR} && mkdir ${TMP_BUILD_ALL_DIR}
+
 # Eigen
 ARG EIGEN3_VERSION=3.3.7
-WORKDIR /tmp/build_all_
-RUN set -x && \
+RUN cd ${TMP_BUILD_ALL_DIR} && \
   wget -q https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.gz && \
   tar zxvf eigen-${EIGEN3_VERSION}.tar.bz && \
   rm -rf eigen-${EIGEN3_VERSION}.tar.bz && \
@@ -70,15 +72,12 @@ RUN set -x && \
     -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} \
     .. && \
   make -j${NUM_THREADS} && \
-  make install && \
-  cd /tmp && \
-  rm -rf *
+  make install
 ENV Eigen3_DIR=${CMAKE_INSTALL_PREFIX}/share/eigen3/cmake
 
 # g2o
 ARG G2O_COMMIT=9b41a4ea5ade8e1250b9c1b279f3a9c098811b5a
-WORKDIR /tmp
-RUN set -x && \
+RUN cd ${TMP_BUILD_ALL_DIR} && \
   git clone https://github.com/RainerKuemmerle/g2o.git && \
   cd g2o && \
   git checkout ${G2O_COMMIT} && \
@@ -99,15 +98,12 @@ RUN set -x && \
     -DG2O_BUILD_LINKED_APPS=OFF \
     .. && \
   make -j${NUM_THREADS} && \
-  make install && \
-  cd /tmp && \
-  rm -rf *
+  make install
 ENV G2O_ROOT=${CMAKE_INSTALL_PREFIX}
 
 # OpenCV
 ARG OPENCV_VERSION=4.1.0
-WORKDIR /tmp
-RUN set -x && \
+RUN cd ${TMP_BUILD_ALL_DIR} && \
   wget -q https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip && \
   unzip -q ${OPENCV_VERSION}.zip && \
   rm -rf ${OPENCV_VERSION}.zip && \
@@ -134,15 +130,12 @@ RUN set -x && \
     -DWITH_OPENMP=ON \
     .. && \
   make -j${NUM_THREADS} && \
-  make install && \
-  cd /tmp && \
-  rm -rf *
+  make install
 ENV OpenCV_DIR=${CMAKE_INSTALL_PREFIX}/share/OpenCV
 
 # DBoW2
 ARG DBOW2_COMMIT=687fcb74dd13717c46add667e3fbfa9828a7019f
-WORKDIR /tmp
-RUN set -x && \
+RUN cd ${TMP_BUILD_ALL_DIR} && \
   git clone https://github.com/shinsumicco/DBoW2.git && \
   cd DBoW2 && \
   git checkout ${DBOW2_COMMIT} && \
@@ -153,15 +146,12 @@ RUN set -x && \
     -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} \
     .. && \
   make -j${NUM_THREADS} && \
-  make install && \
-  cd /tmp && \
-  rm -rf *
+  make install
 ENV DBoW2_DIR=${CMAKE_INSTALL_PREFIX}/lib/cmake/DBoW2
 
 # Pangolin
 ARG PANGOLIN_COMMIT=ad8b5f83222291c51b4800d5a5873b0e90a0cf81
-WORKDIR /tmp
-RUN set -x && \
+RUN cd ${TMP_BUILD_ALL_DIR} && \
   git clone https://github.com/stevenlovegrove/Pangolin.git && \
   cd Pangolin && \
   git checkout ${PANGOLIN_COMMIT} && \
@@ -196,15 +186,12 @@ RUN set -x && \
     -DBUILD_PYPANGOLIN_MODULE=OFF \
     .. && \
   make -j${NUM_THREADS} && \
-  make install && \
-  cd /tmp && \
-  rm -rf *
+  make install
 ENV Pangolin_DIR=${CMAKE_INSTALL_PREFIX}/lib/cmake/Pangolin
 
 # OpenVSLAM
 COPY . /openvslam/
-WORKDIR /openvslam/
-RUN set -x && \
+RUN cd /openvslam && \
   mkdir -p build && \
   cd build && \
   cmake \
