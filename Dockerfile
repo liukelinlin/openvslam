@@ -44,7 +44,7 @@ RUN set -x && \
   rm -rf /var/lib/apt/lists/*
 
 ARG CMAKE_INSTALL_PREFIX=/usr/local
-ARG NUM_THREADS=1
+ARG NUM_THREADS=8
 
 ENV CPATH=${CMAKE_INSTALL_PREFIX}/include:${CPATH}
 ENV C_INCLUDE_PATH=${CMAKE_INSTALL_PREFIX}/include:${C_INCLUDE_PATH}
@@ -61,7 +61,7 @@ RUN rm -rf ${TMP_BUILD_ALL_DIR} && mkdir ${TMP_BUILD_ALL_DIR}
 # Eigen
 ARG EIGEN3_VERSION=3.3.7
 RUN cd ${TMP_BUILD_ALL_DIR} && \
-  wget -q https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.gz && \
+  wget https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.gz && \
   tar zxvf eigen-${EIGEN3_VERSION}.tar.bz && \
   rm -rf eigen-${EIGEN3_VERSION}.tar.bz && \
   cd eigen-${EIGEN3_VERSION} && \
